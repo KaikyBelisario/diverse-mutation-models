@@ -1,0 +1,51 @@
+---
+
+# DOCUMENTO DE CONTEXTUALIZAÇÃO DE PROJETO (CONTEÚDO PARA IA)
+
+## 1. CONTEXTO GERAL E OBJETIVO
+
+* **Autor:** Kaiky Belisario Tirapelli (Bacharelado em Ciência da Computação - UNEMAT).
+* **Tema do Projeto:** "Um Estudo sobre Geração Procedural de Níveis com IA: Combinação de Técnicas Clássicas e Machine Learning para Otimizar Diversidade e Jogabilidade".
+* **Abordagem Teórica:** O projeto implementa um pipeline baseado no framework **MLQD (Machine Learning of Quality Diversity)** e em **Mutation Models (Modelos de Mutação)**, inspirando-se diretamente na literatura de PCGML (Procedural Content Generation via Machine Learning) para gerar labirintos solúveis de tamanho 10x10.
+
+---
+
+## 2. ARQUITETURA DO PIPELINE (4 PASSOS)
+
+O sistema está dividido em quatro scripts sequenciais:
+
+1. **Passo 1 (MAP-Elites):** Algoritmo evolucionário clássico de Qualidade e Diversidade. Ele explora o espaço comportamental baseado em duas métricas (BC1: Densidade de Paredes; BC2: Complexidade Visual/Transições) e salva um arquivo binário (`dataset_mutacoes_qd.npy`) contendo pares de transição evolutiva `{'parent': ..., 'child': ...}`.
+2. **Passo 2 (Modelo de Mutação):** Rede neural treinada para imitar o processo de mutação/refinamento, atuando como um "corretor" de ruídos.
+3. **Passo 3 (Gerador de Esboços):** Rede neural treinada para gerar um esboço bruto inicial com base em parâmetros desejados de densidade e complexidade.
+4. **Passo 4 (Geração Final / Inferência):** Recebe os parâmetros do usuário, gera o esboço via Passo 3 e o refina usando o Modelo de Mutação do Passo 2.
+
+---
+
+## 3. HISTÓRICO DO PROBLEMA E SOLUÇÃO
+
+* **Sintoma:** Durante a execução do **Passo 4**, tanto o "Mapa Inicial (Esboço)" quanto o "Mapa Refinado" saíam 100% idênticos e geométricos, ignorando completamente as alterações de parâmetros de entrada (como densidade alta ou baixa).
+* **Causa Raiz Identificada:** O arquivo `dataset_mutacoes_qd.npy` continha inicialmente apenas 29 exemplos (e depois 52). Isso ocorria porque o comando de captura de dados (`dataset_transitions.append`) estava posicionado dentro do bloco condicional que verificava se o filho superava estritamente o recorde de fitness da célula do MAP-Elites. Como o arquivo da grelha (10x10) saturava rapidamente, o algoritmo parava de registrar novas transições ao longo das 20.000 iterações. Poucos dados forçaram as redes a convergirem para uma mera função de identidade (copiar a entrada na saída).
+* **Solução Aplicada:** O código do **Passo 1** foi corrigido. O salvamento das transições foi desacoplado do critério de substituição da grelha. Agora, contanto que o nível mutado seja viável (`child_fit > 0`), a transição (Pai/Filho) é registrada no dataset, gerando um volume massivo de dados (entre 8.000 e 14.000 exemplos).
+
+---
+
+## 4. ESTADO ATUAL DO CÓDIGO (PASSO 1 CORRIGIDO)
+
+O script do Passo 1 foi ajustado para a seguinte estrutura funcional:
+
+* Matriz do labirinto: `10x10`.
+* Resolução da grelha MAP-Elites: `10x10`.
+* Iterações: `20.000`.
+* Condição de captura para o Dataset: Qualquer mutação com `child_fit > 0` (independente de quebrar recorde na célula).
+
+---
+
+## 5. PRÓXIMOS PASSOS (ORIENTAÇÃO PARA A IA CONTINUAR)
+
+Ao ler este documento, a nova IA deve estar ciente de que as próximas etapas do projeto consistem em:
+
+1. Executar o **Passo 1** corrigido para gerar o dataset massivo.
+2. Reexecutar o treinamento do **Passo 2** e **Passo 3** usando esse novo arquivo rico em dados para que as perdas (*Loss*) diminuam corretamente.
+3. Validar o **Passo 4**, garantindo que o esboço responda aos parâmetros e que o refinamento de mutação aplique modificações visíveis no labirinto final.
+
+*A IA pode agora auxiliar na otimização das arquiteturas das redes neurais (CNNs/Transformers) dos Passos 2 e 3 ou na análise dos resultados obtidos.*
