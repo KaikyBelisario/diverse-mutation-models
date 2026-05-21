@@ -40,8 +40,18 @@ def get_mutation_model_path():
 
 
 def get_sketch_model_path():
-    """Retorna o caminho do modelo do gerador de esboços treinado."""
+    """Retorna o caminho do modelo do gerador de esboços (legado — CNN condicional)."""
     return os.path.join(RESULTS_DIR, "gerador_esbocos.pth")
+
+
+def get_transformer_model_path():
+    """Retorna o caminho do Transformer treinado (MLQD §3.2)."""
+    return os.path.join(RESULTS_DIR, "transformer_model.pth")
+
+
+def get_era_plot_path():
+    """Retorna o caminho do gráfico de Expressive Range Analysis."""
+    return os.path.join(RESULTS_DIR, "era_plot.png")
 
 
 # ============================================================================
@@ -49,10 +59,10 @@ def get_sketch_model_path():
 # ============================================================================
 
 def all_models_exist():
-    """Retorna True se todos os modelos treinados existem."""
+    """Retorna True se todos os modelos do pipeline revisado existem."""
     return (
         os.path.exists(get_dataset_path()) and
         os.path.exists(get_mutation_model_path()) and
-        os.path.exists(get_sketch_model_path())
+        os.path.exists(get_transformer_model_path())
     )
 

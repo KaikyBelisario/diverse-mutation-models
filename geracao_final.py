@@ -1,138 +1,181 @@
+"""
+geracao_final.py — Pipeline de Inferência: Transformer + MutationCNN
+---------------------------------------------------------------------
+Passo 4 do pipeline PCGML:
+  1. MapTransformer gera um mapa 8×8 autoregressivamente (top-p sampling)
+  2. MutationCNN refina o mapa via scanline (narrow representation)
+
+Nenhuma função de fitness é usada durante a inferência
+(Khalifa et al. §4.4 — modelo inferência independente de fitness).
+"""
+
 import torch
-import torch.nn as nn
 import numpy as np
+
 from device_utils import get_device
-from path_utils import get_sketch_model_path, get_mutation_model_path
+from path_utils import get_transformer_model_path, get_mutation_model_path
+from domain import (
+    feasibility_score, compute_features,
+    GRID_SIZE, FLOOR, WALL, RESOURCE, BASE, crop_around, CROP_SIZE,
+    repair_constraints,
+)
+from transformer_model import MapTransformer
+from treino_mutacao import MutationCNN, N_ACTIONS, _TILE_TO_ACTION
 
-# --- 1. RE-DECLARAÇÃO DAS ARQUITETURAS (devem ser idênticas aos scripts de treino) ---
+# Mapeamento ação → tile  (inverso de _TILE_TO_ACTION)
+_ACTION_TO_TILE = {v: k for k, v in _TILE_TO_ACTION.items()}
+_ACTION_TO_TILE[0] = None   # NoChange
 
-class ConditionalSketchGenerator(nn.Module):
-    def __init__(self):
-        super(ConditionalSketchGenerator, self).__init__()
-        self.fc = nn.Sequential(
-            nn.Linear(2, 128),
-            nn.BatchNorm1d(128),
-            nn.ReLU(),
-            nn.Linear(128, 512),
-            nn.BatchNorm1d(512),
-            nn.ReLU()
-        )
-        self.deconv = nn.Sequential(
-            nn.ConvTranspose2d(32, 64, kernel_size=3, stride=2, padding=0),
-            nn.BatchNorm2d(64),
-            nn.ReLU(),
-            nn.ConvTranspose2d(64, 1, kernel_size=2, stride=1, padding=0),
-            nn.Sigmoid()
-        )
-    def forward(self, condition):
-        x = self.fc(condition)
-        x = x.view(-1, 32, 4, 4)
-        return self.deconv(x)
+TILE_SYMBOLS = {FLOOR: '  ', WALL: '██', RESOURCE: ' R', BASE: ' B'}
 
 
-class MutationCNN(nn.Module):
-    def __init__(self):
-        super(MutationCNN, self).__init__()
-        self.encoder = nn.Sequential(
-            nn.Conv2d(1, 32, kernel_size=3, padding=1),
-            nn.BatchNorm2d(32),
-            nn.ReLU(),
-            nn.Conv2d(32, 64, kernel_size=3, padding=1),
-            nn.BatchNorm2d(64),
-            nn.ReLU(),
-        )
-        self.decoder = nn.Sequential(
-            nn.Conv2d(64, 32, kernel_size=3, padding=1),
-            nn.BatchNorm2d(32),
-            nn.ReLU(),
-            nn.Conv2d(32, 1, kernel_size=3, padding=1),
-            nn.Tanh()
-        )
-    def forward(self, x):
-        features = self.encoder(x)
-        delta = self.decoder(features)
-        return torch.clamp(x + delta * 0.5, 0.0, 1.0)
+# ─────────────────────────────────────────────────────────────────────────────
+# Utilitários de visualização
+# ─────────────────────────────────────────────────────────────────────────────
 
-
-# --- 2. FUNÇÃO AUXILIAR DE VISUALIZAÇÃO ---
-def print_level(level, title="Labirinto"):
-    """Imprime o labirinto no terminal usando caracteres visuais."""
-    print(f"\n--- {title} ---")
+def print_level(level, title: str = "Mapa") -> None:
+    is_feas, f_inf = feasibility_score(level)
+    print(f"\n┌─ {title} {'─' * max(0, 40 - len(title))}┐")
     for row in level:
-        row_str = "".join(["██" if tile == 1 else "  " for tile in row])
-        print(row_str)
-    print("-" * (len(title) + 8))
+        print('│' + ''.join(TILE_SYMBOLS.get(int(t), '??') for t in row) + '│')
+    status = '✓ Viável' if is_feas else f'✗ Inviável (f_inf={f_inf:.3f})'
+    print(f"└{'─' * 18}┘  {status}")
 
 
-def binarize_probabilistic(probs, seed=None):
+# ─────────────────────────────────────────────────────────────────────────────
+# Carregamento de modelos
+# ─────────────────────────────────────────────────────────────────────────────
+
+def load_transformer(device):
+    model = MapTransformer().to(device)
+    model.load_state_dict(torch.load(get_transformer_model_path(),
+                                     map_location=device, weights_only=True))
+    model.eval()
+    return model
+
+
+def load_mutation_cnn(device):
+    model = MutationCNN().to(device)
+    model.load_state_dict(torch.load(get_mutation_model_path(),
+                                     map_location=device, weights_only=True))
+    model.eval()
+    return model
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Refinamento via MutationCNN  (scanline — Khalifa et al. §4.4)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def refine_with_mutation_model(
+        level:          np.ndarray,
+        mutation_model: MutationCNN,
+        device:         torch.device,
+        steps:          int = 3,
+) -> np.ndarray:
     """
-    Binarização probabilística: cada tile é amostrado com probabilidade = valor da rede.
-    Evita o colapso para ponto fixo que ocorre com threshold hard (> 0.5).
+    Itera sobre o mapa em scanline (row-major) por 'steps' passes completos.
+    Para cada tile, pergunta ao modelo qual ação tomar;
+    Bases são sempre preservadas.
+    Para quando viável ou ao esgotar os steps.
     """
-    rng = np.random.default_rng(seed)
-    binary = (rng.random(probs.shape) < probs).astype(np.float32)
-    # Garante que início (0,0) e fim (9,9) são sempre caminhos livres
-    binary[0, 0] = 0.0
-    binary[9, 9] = 0.0
-    return binary
+    current = level.copy().astype(np.float32)
+
+    for step in range(steps):
+        new_level = current.copy()
+
+        for r in range(GRID_SIZE):
+            for c in range(GRID_SIZE):
+                # Bases e Resources são intocáveis:
+                # - Bases são hard constraints do domínio
+                # - Resources: o MutationCNN foi treinado só com changes → nunca prediz
+                #   NoChange=0, o que desfaria o repair. A CNN foca em Wall/Floor (conectividade).
+                if int(current[r, c]) in (BASE, RESOURCE):
+                    continue
+
+                crop = crop_around(current, r, c, size=CROP_SIZE)
+                inp  = torch.tensor(
+                    crop / 3.0, dtype=torch.float32
+                ).unsqueeze(0).unsqueeze(0).to(device)
+
+                with torch.no_grad():
+                    action_idx = mutation_model(inp).argmax(dim=1).item()
+
+                new_tile = _ACTION_TO_TILE.get(action_idx)
+                if new_tile is not None:
+                    new_level[r, c] = new_tile
+
+        current = new_level
+        # Para cedo se o mapa já for viável
+        is_feas, _ = feasibility_score(current.astype(np.int8))
+        if is_feas:
+            break
+
+    return current.astype(np.int8)
 
 
-# --- 3. PIPELINE DE INFERÊNCIA COMBINADO ---
-def generate_custom_level(target_density, target_complexity, mutation_steps=3):
+# ─────────────────────────────────────────────────────────────────────────────
+# Pipeline completo de geração
+# ─────────────────────────────────────────────────────────────────────────────
+
+def generate_map(
+        mutation_steps: int   = 3,
+        top_p:          float = 0.9,
+        verbose:        bool  = True,
+        _transformer=None,
+        _mutation_cnn=None,
+) -> np.ndarray:
+    """
+    Gera um mapa estratégico 8×8 completo:
+      1. Transformer produz esboço via amostragem autoregressiva
+      2. MutationCNN refina o esboço em N passes de scanline
+
+    Aceita modelos pré-carregados opcionalmente (evita recarregar em loop).
+    """
     device = get_device()
 
-    # 1. Carregar o Gerador de Esboços
-    sketch_net = ConditionalSketchGenerator().to(device)
-    try:
-        sketch_net.load_state_dict(torch.load(get_sketch_model_path(), map_location=device))
-        sketch_net.eval()
-    except FileNotFoundError:
-        print(f"Erro: '{get_sketch_model_path()}' não encontrado. Execute o Passo 3!")
-        return
+    transformer  = _transformer  or load_transformer(device)
+    mutation_cnn = _mutation_cnn or load_mutation_cnn(device)
 
-    # 2. Carregar o Modelo de Mutação
-    mutation_net = MutationCNN().to(device)
-    try:
-        mutation_net.load_state_dict(torch.load(get_mutation_model_path(), map_location=device))
-        mutation_net.eval()
-    except FileNotFoundError:
-        print(f"Erro: '{get_mutation_model_path()}' não encontrado. Execute o Passo 2!")
-        return
+    # Etapa A: geração pelo Transformer
+    sketch = transformer.generate(device, top_p=top_p)
+    if verbose:
+        print_level(sketch, "1. ESBOÇO (Transformer)")
 
-    print(f"\n[INFO] Solicitando mapa com Densidade: {target_density*100:.0f}% e Complexidade: {target_complexity*100:.0f}%")
+    # Repair antes do refinamento: insere resources e bases em posições aleatórias
+    # para que o MutationCNN trabalhe a partir de um mapa estruturalmente válido.
+    sketch = repair_constraints(sketch)
 
-    # --- ETAPA A: GERANDO O ESBOÇO ---
-    condition_tensor = torch.tensor([[target_density, target_complexity]], dtype=torch.float32).to(device)
+    # Etapa B: refinamento pelo MutationCNN (só toca Floor/Wall — veja refine_*)
+    refined = refine_with_mutation_model(sketch, mutation_cnn, device, steps=mutation_steps)
 
-    with torch.no_grad():
-        sketch_output = sketch_net(condition_tensor)
+    # Repair final: re-assegura constraints após o scanline do MutationCNN
+    refined = repair_constraints(refined)
 
-    sketch_probs = sketch_output.squeeze().cpu().numpy()
-    # Binarização probabilística para o esboço inicial
-    sketch_binary = binarize_probabilistic(sketch_probs)
-    print_level(sketch_binary, "1. ESBOÇO INICIAL (Bruto)")
+    if verbose:
+        print_level(refined, f"2. MAPA REFINADO ({mutation_steps} passes)")
 
-    # --- ETAPA B: REFINAMENTO PELO MODELO DE MUTAÇÃO ---
-    current_map_tensor = torch.tensor(sketch_binary, dtype=torch.float32).unsqueeze(0).unsqueeze(0).to(device)
+    return refined
 
-    for step in range(mutation_steps):
-        with torch.no_grad():
-            mutation_output = mutation_net(current_map_tensor)
 
-        mutated_probs = mutation_output.squeeze().cpu().numpy()
-        # Amostragem probabilística: cada chamada pode gerar resultado diferente
-        sketch_binary = binarize_probabilistic(mutated_probs, seed=None)
-
-        current_map_tensor = torch.tensor(sketch_binary, dtype=torch.float32).unsqueeze(0).unsqueeze(0).to(device)
-
-    print_level(sketch_binary, f"2. MAPA REFINADO (Após {mutation_steps} Mutações)")
-    return sketch_binary
-
+# ─────────────────────────────────────────────────────────────────────────────
+# Ponto de entrada standalone
+# ─────────────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    DESIRED_DENSITY = 0.30
-    DESIRED_COMPLEXITY = 0.50
+    device = get_device()
 
-    generate_custom_level(target_density=DESIRED_DENSITY,
-                          target_complexity=DESIRED_COMPLEXITY,
-                          mutation_steps=4)
+    try:
+        transformer  = load_transformer(device)
+        mutation_cnn = load_mutation_cnn(device)
+    except FileNotFoundError as e:
+        print(f"Erro: {e}")
+        print("Execute o pipeline completo primeiro (python main.py).")
+        raise SystemExit(1)
+
+    print(f"\n[Inferência] Gerando 5 mapas de exemplo...\n")
+    for i in range(5):
+        print(f"\n{'═'*44}")
+        print(f"  Mapa {i+1}/5")
+        generate_map(mutation_steps=3,
+                     _transformer=transformer,
+                     _mutation_cnn=mutation_cnn)

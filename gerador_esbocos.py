@@ -6,7 +6,7 @@ import numpy as np
 from device_utils import get_device
 from path_utils import ensure_results_dir, get_dataset_path, get_sketch_model_path
 
-GRID_SIZE = 10
+GRID_SIZE = 14
 
 # --- 1. FUNÇÃO PARA EXTRAIR AS CARACTERÍSTICAS (IGUAL AO PASSO 1) ---
 def calculate_features(level):

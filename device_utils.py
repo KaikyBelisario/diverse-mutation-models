@@ -15,6 +15,9 @@ Para usar uma GPU AMD instale o build ROCm do PyTorch:
 
 import torch
 
+# Cache: imprime e detecta somente uma vez por sessão
+_cached_device: "torch.device | None" = None
+
 
 def get_device(verbose: bool = True) -> torch.device:
     """
@@ -30,6 +33,10 @@ def get_device(verbose: bool = True) -> torch.device:
     -------
     torch.device
     """
+    global _cached_device
+    if _cached_device is not None:
+        return _cached_device
+
     if torch.cuda.is_available():
         device = torch.device("cuda")
         gpu_name = torch.cuda.get_device_name(0)
@@ -41,6 +48,7 @@ def get_device(verbose: bool = True) -> torch.device:
             vendor = "AMD (ROCm)" if is_amd else "NVIDIA (CUDA)"
             print(f"[DEVICE] GPU selecionada: {gpu_name}  [{vendor}]")
 
+        _cached_device = device
         return device
 
     if verbose:
@@ -51,7 +59,8 @@ def get_device(verbose: bool = True) -> torch.device:
             "pip install torch --index-url https://download.pytorch.org/whl/rocm6.2\n"
             "[DEVICE] Usando: CPU"
         )
-    return torch.device("cpu")
+    _cached_device = torch.device("cpu")
+    return _cached_device
 
 
 def device_info() -> str:
@@ -59,4 +68,3 @@ def device_info() -> str:
     if torch.cuda.is_available():
         return torch.cuda.get_device_name(0)
     return "CPU"
-
