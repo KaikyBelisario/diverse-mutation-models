@@ -10,7 +10,8 @@ Implementação fiel ao MLQD §3.2 e §4.2 (Sfikas et al., 2025):
   - Treino: cross-entropy; splits 80/15/5; early stopping patience=3
   - Inferência: autoregressiva com top-p sampling  p=0.9  (§4.2.4)
 """
-
+import os
+os.environ["HSA_OVERRIDE_GFX_VERSION"] = "11.0.0"
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -117,7 +118,7 @@ class MapTransformer(nn.Module):
             dim_feedforward=ff_dim,
             dropout=dropout,
             batch_first=True,
-            norm_first=True,          # Pre-LN: mais estável para treino
+            norm_first=False,          # Pre-LN: mais estável para treino
         )
         self.transformer = nn.TransformerEncoder(encoder_layer, num_layers=n_layers)
 
