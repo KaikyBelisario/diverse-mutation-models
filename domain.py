@@ -266,7 +266,8 @@ def _apply_model_mutation(model, level, r, c):
     """Usa o MutationCNN para prever ação em (r, c). Retorna tile ou 'no_change'."""
     import torch
     crop = crop_around(level, r, c)
-    inp = torch.tensor(crop / 3.0, dtype=torch.float32).unsqueeze(0).unsqueeze(0)
+    device = next(model.parameters()).device
+    inp = torch.tensor(crop / 3.0, dtype=torch.float32).unsqueeze(0).unsqueeze(0).to(device)
     with torch.no_grad():
         logits = model(inp)
         action_idx = logits.argmax(dim=1).item()
