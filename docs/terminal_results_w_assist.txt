@@ -1,0 +1,566 @@
+Execução 1
+
+================================================================
+  PCGML — MLQD + Mutation Models Pipeline
+  EHR alvo: 50,000 | Assisted: True
+================================================================
+
+================================================================
+  PASSO 1: FI-CPA — Gerando EHR de Mutações (MLQD §3.1 + §5.1.1)
+================================================================
+[Passo 1] Modo Assisted Evolution ativado (Khalifa et al. §3.2)
+[CPA] Inicializando com 1105 indivíduos...
+[CPA] Arquivo viável: 123 células | Infeasível: 0 células
+[CPA] Coletando 50000 entradas no EHR...
+[CPA] Assisted re-treino (step=2,500, ehr=7,244)...
+[Assisted] Retreinando com 7,244 amostras (2 épocas)...
+[DEVICE] GPU selecionada: AMD Radeon RX 7600  [AMD (ROCm)]
+[MutationCNN] Construindo dataset de 7,244 transições...
+   Época [1/2] | Loss: 0.9877 | Val Acc: 58.7%
+   Época [2/2] | Loss: 0.9023 | Val Acc: 58.7%
+[MutationCNN] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/modelo_mutacao.pth'.
+[CPA] Assisted re-treino (step=5,000, ehr=12,176)...
+[Assisted] Retreinando com 12,176 amostras (2 épocas)...
+[MutationCNN] Construindo dataset de 12,176 transições...
+   Época [1/2] | Loss: 0.8508 | Val Acc: 72.6%
+   Época [2/2] | Loss: 0.7502 | Val Acc: 72.6%
+[MutationCNN] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/modelo_mutacao.pth'.
+   step=   5,000 | EHR=12,176 / 50,000 | cells_feas=307
+[CPA] Assisted re-treino (step=7,500, ehr=16,627)...
+[Assisted] Retreinando com 16,627 amostras (2 épocas)...
+[MutationCNN] Construindo dataset de 16,627 transições...
+   Época [1/2] | Loss: 0.7509 | Val Acc: 74.3%
+   Época [2/2] | Loss: 0.6683 | Val Acc: 74.1%
+[MutationCNN] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/modelo_mutacao.pth'.
+[CPA] Assisted re-treino (step=10,000, ehr=20,857)...
+[Assisted] Retreinando com 20,857 amostras (2 épocas)...
+[MutationCNN] Construindo dataset de 20,857 transições...
+   Época [1/2] | Loss: 0.7042 | Val Acc: 77.5%
+   Época [2/2] | Loss: 0.6349 | Val Acc: 77.5%
+[MutationCNN] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/modelo_mutacao.pth'.
+   step=  10,000 | EHR=20,857 / 50,000 | cells_feas=362
+[CPA] Assisted re-treino (step=12,500, ehr=24,607)...
+[Assisted] Retreinando com 24,607 amostras (2 épocas)...
+[MutationCNN] Construindo dataset de 24,607 transições...
+   Época [1/2] | Loss: 0.6735 | Val Acc: 79.9%
+   Época [2/2] | Loss: 0.5517 | Val Acc: 81.1%
+[MutationCNN] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/modelo_mutacao.pth'.
+[CPA] Assisted re-treino (step=15,000, ehr=29,195)...
+[Assisted] Retreinando com 29,195 amostras (2 épocas)...
+[MutationCNN] Construindo dataset de 29,195 transições...
+   Época [1/2] | Loss: 0.6729 | Val Acc: 77.1%
+   Época [2/2] | Loss: 0.4898 | Val Acc: 86.5%
+[MutationCNN] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/modelo_mutacao.pth'.
+   step=  15,000 | EHR=29,195 / 50,000 | cells_feas=393
+[CPA] Assisted re-treino (step=17,500, ehr=35,370)...
+[Assisted] Retreinando com 35,370 amostras (2 épocas)...
+[MutationCNN] Construindo dataset de 35,370 transições...
+   Época [1/2] | Loss: 0.6687 | Val Acc: 79.5%
+   Época [2/2] | Loss: 0.4424 | Val Acc: 89.4%
+[MutationCNN] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/modelo_mutacao.pth'.
+[CPA] Assisted re-treino (step=20,000, ehr=41,625)...
+[Assisted] Retreinando com 41,625 amostras (2 épocas)...
+[MutationCNN] Construindo dataset de 41,625 transições...
+   Época [1/2] | Loss: 0.6341 | Val Acc: 83.7%
+   Época [2/2] | Loss: 0.3787 | Val Acc: 90.8%
+[MutationCNN] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/modelo_mutacao.pth'.
+   step=  20,000 | EHR=41,625 / 50,000 | cells_feas=411
+[CPA] Assisted re-treino (step=22,500, ehr=47,851)...
+[Assisted] Retreinando com 47,851 amostras (2 épocas)...
+[MutationCNN] Construindo dataset de 47,851 transições...
+   Época [1/2] | Loss: 0.6192 | Val Acc: 87.1%
+   Época [2/2] | Loss: 0.3247 | Val Acc: 93.2%
+[MutationCNN] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/modelo_mutacao.pth'.
+[CPA] Concluído! EHR com 50,004 entradas (23,297 iterações no total).
+-> EHR salvo: 50,004 entradas em '/home/kaicola/coisas/PCGML/resultados/dataset_mutacoes_qd.npy'
+-> Células viáveis nos arquivos: 416
+-> Tempo: 1m 27s
+
+================================================================
+  PASSO 2: MutationCNN — Imitando Mutações Evolutivas (Khalifa et al. §3)
+================================================================
+[MutationCNN] Construindo dataset de 50,004 transições...
+   Época [1/8] | Loss: 0.6148 | Val Acc: 86.5%
+   Época [2/8] | Loss: 0.3268 | Val Acc: 92.5%
+   Época [3/8] | Loss: 0.2695 | Val Acc: 92.8%
+   Época [4/8] | Loss: 0.2499 | Val Acc: 93.0%
+   Época [5/8] | Loss: 0.2357 | Val Acc: 93.0%
+   Época [6/8] | Loss: 0.2240 | Val Acc: 93.0%
+   Época [7/8] | Loss: 0.2149 | Val Acc: 93.0%
+   Época [8/8] | Loss: 0.2069 | Val Acc: 93.0%
+[MutationCNN] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/modelo_mutacao.pth'.
+-> Tempo: 16s
+
+================================================================
+  PASSO 3: Transformer — Aprendendo Distribuição QD (MLQD §3.2)
+================================================================
+[Transformer] Carregando dataset do EHR...
+[TransformerDS] 50,004 entradas → 8,430 únicas
+[Transformer] Train=6,744 | Val=1,264 | Test=422
+[Transformer] Parâmetros treináveis: 811,270
+   Época [ 1/50] | Train Loss: 1.4041 | Val Loss: 0.9318
+   Época [ 5/50] | Train Loss: 0.7927 | Val Loss: 0.7429
+   Época [10/50] | Train Loss: 0.6923 | Val Loss: 0.6653
+   Época [15/50] | Train Loss: 0.6635 | Val Loss: 0.6433
+   Época [20/50] | Train Loss: 0.6468 | Val Loss: 0.6285
+   Época [25/50] | Train Loss: 0.6330 | Val Loss: 0.6151
+   Época [30/50] | Train Loss: 0.6236 | Val Loss: 0.6068
+   Época [35/50] | Train Loss: 0.6147 | Val Loss: 0.6026
+   Época [40/50] | Train Loss: 0.6084 | Val Loss: 0.5998
+   Época [45/50] | Train Loss: 0.6023 | Val Loss: 0.5928
+   Época [50/50] | Train Loss: 0.5970 | Val Loss: 0.5916
+[Transformer] Concluído! Melhor val loss: 0.5895
+[Transformer] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/transformer_model.pth'.
+-> Tempo: 58s
+
+================================================================
+  PASSO 4: Inferência + Avaliação (MLQD §5.2 H1–H4)
+================================================================
+
+[Avaliação] Gerando 200 mapas para avaliação...
+   50/200 mapas gerados
+   100/200 mapas gerados
+   150/200 mapas gerados
+   200/200 mapas gerados
+
+====================================================
+  RELATÓRIO DE AVALIAÇÃO — MLQD
+====================================================
+  Mapas gerados  : 200
+  Mapas viáveis  : 175 (87.5%)   [H1]
+  Unique ratio   : 99.4%          [H2]
+  Unseen ratio   : 100.0%          [H2]
+  Cobertura BC ø : 31.5%          [H3]
+
+  Cobertura por feature (H3):
+  F01 Floor Ratio              ██████████████            58.5%
+  F02 Wall Ratio               ██████████████            58.5%
+  F03 Resource Ratio           ██                        10.8%
+  F04 Horiz. Symmetry          ██████                    27.7%
+  F05 Vert. Symmetry           ███████                   30.8%
+  F06 Diag. Symmetry           █████                     24.6%
+  F07 Anti-Diag. Symmetry      ███████                   30.8%
+  F08 Wall Islands             █████                     23.1%
+  F09 Graph Diameter           ███████                   32.3%
+  F10 Bases Distance           ████                      20.0%
+  F11 Resource Safety          ██                        12.3%
+  F12 Resource Safety Bal.     █████                     24.6%
+  F13 Base Safety              ███████                   30.8%
+  F14 Base Safety Bal.         ████████████████████      84.6%
+  F15 Exploration              █████                     21.5%
+  F16 Exploration Bal.         ███                       13.8%
+====================================================
+[ERA] Gráfico salvo em '/home/kaicola/coisas/PCGML/resultados/era_plot.png'
+
+[Exemplos] 3 mapas gerados:
+
+┌─ Exemplo 1 ───────────────────────────────┐
+│████      ████  │
+│      ██  ██    │
+│  ████          │
+│         B  ██  │
+│██  ████   R██  │
+│ R      ██  ████│
+│██           R  │
+│ R   R    ██   B│
+└──────────────────┘  ✓ Viável
+
+┌─ Exemplo 2 ───────────────────────────────┐
+│               R│
+│    ████  ██   B│
+│██  ██      ██  │
+│        ██    ██│
+│ R  ██      ██  │
+│  ██     R   B  │
+│     R    ██    │
+│      ████      │
+└──────────────────┘  ✓ Viável
+
+┌─ Exemplo 3 ───────────────────────────────┐
+│██         B   R│
+│██     R     R██│
+│        ██   B  │
+│  ██████   R    │
+│   R           R│
+│    ██        ██│
+│██  ████ R  ██  │
+│           R██  │
+└──────────────────┘  ✓ Viável
+
+================================================================
+  Pipeline concluído! Tempo total: 3m 10s
+================================================================
+
+Execução 2
+
+================================================================
+  PCGML — MLQD + Mutation Models Pipeline
+  EHR alvo: 50,000 | Assisted: True
+================================================================
+
+================================================================
+  PASSO 1: FI-CPA — Gerando EHR de Mutações (MLQD §3.1 + §5.1.1)
+================================================================
+[Passo 1] Modo Assisted Evolution ativado (Khalifa et al. §3.2)
+[CPA] Inicializando com 1105 indivíduos...
+[CPA] Arquivo viável: 118 células | Infeasível: 0 células
+[CPA] Coletando 50000 entradas no EHR...
+[CPA] Assisted re-treino (step=2,500, ehr=8,273)...
+[Assisted] Retreinando com 8,273 amostras (2 épocas)...
+[DEVICE] GPU selecionada: AMD Radeon RX 7600  [AMD (ROCm)]
+[MutationCNN] Construindo dataset de 8,273 transições...
+   Época [1/2] | Loss: 0.9806 | Val Acc: 59.9%
+   Época [2/2] | Loss: 0.9021 | Val Acc: 59.9%
+[MutationCNN] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/modelo_mutacao.pth'.
+[CPA] Assisted re-treino (step=5,000, ehr=12,919)...
+[Assisted] Retreinando com 12,919 amostras (2 épocas)...
+[MutationCNN] Construindo dataset de 12,919 transições...
+   Época [1/2] | Loss: 0.8608 | Val Acc: 70.2%
+   Época [2/2] | Loss: 0.7770 | Val Acc: 70.2%
+[MutationCNN] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/modelo_mutacao.pth'.
+   step=   5,000 | EHR=12,919 / 50,000 | cells_feas=322
+[CPA] Assisted re-treino (step=7,500, ehr=17,051)...
+[Assisted] Retreinando com 17,051 amostras (2 épocas)...
+[MutationCNN] Construindo dataset de 17,051 transições...
+   Época [1/2] | Loss: 0.7676 | Val Acc: 72.7%
+   Época [2/2] | Loss: 0.6681 | Val Acc: 74.1%
+[MutationCNN] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/modelo_mutacao.pth'.
+[CPA] Assisted re-treino (step=10,000, ehr=21,705)...
+[Assisted] Retreinando com 21,705 amostras (2 épocas)...
+[MutationCNN] Construindo dataset de 21,705 transições...
+   Época [1/2] | Loss: 0.7487 | Val Acc: 74.3%
+   Época [2/2] | Loss: 0.5851 | Val Acc: 81.2%
+[MutationCNN] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/modelo_mutacao.pth'.
+   step=  10,000 | EHR=21,705 / 50,000 | cells_feas=367
+[CPA] Assisted re-treino (step=12,500, ehr=27,352)...
+[Assisted] Retreinando com 27,352 amostras (2 épocas)...
+[MutationCNN] Construindo dataset de 27,352 transições...
+   Época [1/2] | Loss: 0.7216 | Val Acc: 76.4%
+   Época [2/2] | Loss: 0.5389 | Val Acc: 87.5%
+[MutationCNN] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/modelo_mutacao.pth'.
+[CPA] Assisted re-treino (step=15,000, ehr=33,882)...
+[Assisted] Retreinando com 33,882 amostras (2 épocas)...
+[MutationCNN] Construindo dataset de 33,882 transições...
+   Época [1/2] | Loss: 0.6981 | Val Acc: 80.1%
+   Época [2/2] | Loss: 0.4302 | Val Acc: 91.9%
+[MutationCNN] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/modelo_mutacao.pth'.
+   step=  15,000 | EHR=33,882 / 50,000 | cells_feas=393
+[CPA] Assisted re-treino (step=17,500, ehr=40,663)...
+[Assisted] Retreinando com 40,663 amostras (2 épocas)...
+[MutationCNN] Construindo dataset de 40,663 transições...
+   Época [1/2] | Loss: 0.6870 | Val Acc: 81.2%
+   Época [2/2] | Loss: 0.3789 | Val Acc: 93.3%
+[MutationCNN] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/modelo_mutacao.pth'.
+[CPA] Assisted re-treino (step=20,000, ehr=47,408)...
+[Assisted] Retreinando com 47,408 amostras (2 épocas)...
+[MutationCNN] Construindo dataset de 47,408 transições...
+   Época [1/2] | Loss: 0.6384 | Val Acc: 84.9%
+   Época [2/2] | Loss: 0.3020 | Val Acc: 94.6%
+[MutationCNN] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/modelo_mutacao.pth'.
+   step=  20,000 | EHR=47,408 / 50,000 | cells_feas=405
+[CPA] Concluído! EHR com 50,002 entradas (20,996 iterações no total).
+-> EHR salvo: 50,002 entradas em '/home/kaicola/coisas/PCGML/resultados/dataset_mutacoes_qd.npy'
+-> Células viáveis nos arquivos: 405
+-> Tempo: 1m 30s
+
+================================================================
+  PASSO 2: MutationCNN — Imitando Mutações Evolutivas (Khalifa et al. §3)
+================================================================
+[MutationCNN] Construindo dataset de 50,002 transições...
+   Época [1/8] | Loss: 0.5863 | Val Acc: 90.5%
+   Época [2/8] | Loss: 0.2699 | Val Acc: 94.3%
+   Época [3/8] | Loss: 0.2284 | Val Acc: 94.4%
+   Época [4/8] | Loss: 0.2144 | Val Acc: 94.4%
+   Época [5/8] | Loss: 0.2048 | Val Acc: 94.4%
+   Época [6/8] | Loss: 0.1988 | Val Acc: 94.4%
+   Época [7/8] | Loss: 0.1925 | Val Acc: 94.4%
+   Época [8/8] | Loss: 0.1878 | Val Acc: 94.4%
+[MutationCNN] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/modelo_mutacao.pth'.
+-> Tempo: 16s
+
+================================================================
+  PASSO 3: Transformer — Aprendendo Distribuição QD (MLQD §3.2)
+================================================================
+[Transformer] Carregando dataset do EHR...
+[TransformerDS] 50,002 entradas → 8,185 únicas
+[Transformer] Train=6,548 | Val=1,227 | Test=410
+[Transformer] Parâmetros treináveis: 811,270
+   Época [ 1/50] | Train Loss: 1.2322 | Val Loss: 0.9606
+   Época [ 5/50] | Train Loss: 0.7697 | Val Loss: 0.7245
+   Época [10/50] | Train Loss: 0.6984 | Val Loss: 0.6629
+   Época [15/50] | Train Loss: 0.6735 | Val Loss: 0.6440
+   Época [20/50] | Train Loss: 0.6550 | Val Loss: 0.6291
+   Época [25/50] | Train Loss: 0.6422 | Val Loss: 0.6179
+   Época [30/50] | Train Loss: 0.6328 | Val Loss: 0.6124
+   Época [35/50] | Train Loss: 0.6245 | Val Loss: 0.6088
+   Época [40/50] | Train Loss: 0.6166 | Val Loss: 0.5982
+   Época [45/50] | Train Loss: 0.6110 | Val Loss: 0.5962
+   Época [50/50] | Train Loss: 0.6043 | Val Loss: 0.5918
+[Transformer] Concluído! Melhor val loss: 0.5897
+[Transformer] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/transformer_model.pth'.
+-> Tempo: 57s
+
+================================================================
+  PASSO 4: Inferência + Avaliação (MLQD §5.2 H1–H4)
+================================================================
+
+[Avaliação] Gerando 200 mapas para avaliação...
+   50/200 mapas gerados
+   100/200 mapas gerados
+   150/200 mapas gerados
+   200/200 mapas gerados
+
+====================================================
+  RELATÓRIO DE AVALIAÇÃO — MLQD
+====================================================
+  Mapas gerados  : 200
+  Mapas viáveis  : 179 (89.5%)   [H1]
+  Unique ratio   : 100.0%          [H2]
+  Unseen ratio   : 100.0%          [H2]
+  Cobertura BC ø : 33.1%          [H3]
+
+  Cobertura por feature (H3):
+  F01 Floor Ratio              █████████████             56.9%
+  F02 Wall Ratio               ██████████████            58.5%
+  F03 Resource Ratio           ██                        10.8%
+  F04 Horiz. Symmetry          ███████                   29.2%
+  F05 Vert. Symmetry           ███████                   32.3%
+  F06 Diag. Symmetry           ███████                   32.3%
+  F07 Anti-Diag. Symmetry      ███████                   30.8%
+  F08 Wall Islands             ██████                    27.7%
+  F09 Graph Diameter           ███████                   32.3%
+  F10 Bases Distance           ████                      20.0%
+  F11 Resource Safety          ████                      16.9%
+  F12 Resource Safety Bal.     █████                     21.5%
+  F13 Base Safety              █████████                 40.0%
+  F14 Base Safety Bal.         ███████████████████       83.1%
+  F15 Exploration              █████                     23.1%
+  F16 Exploration Bal.         ███                       13.8%
+====================================================
+[ERA] Gráfico salvo em '/home/kaicola/coisas/PCGML/resultados/era_plot.png'
+
+[Exemplos] 3 mapas gerados:
+
+┌─ Exemplo 1 ───────────────────────────────┐
+│████████████████│
+│██████ R R B R  │
+│  ██████        │
+│██████   R  ██  │
+│██  ██   B██████│
+│██    ██████  ██│
+│    ████████  ██│
+│████████  ██  ██│
+└──────────────────┘  ✓ Viável
+
+┌─ Exemplo 2 ───────────────────────────────┐
+│     B          │
+│                │
+│               R│
+│ R     B        │
+│             R  │
+│                │
+│                │
+│     R          │
+└──────────────────┘  ✓ Viável
+
+┌─ Exemplo 3 ───────────────────────────────┐
+│    ██ R██      │
+│██  ██    ██  ██│
+│   R  ██        │
+│            ██  │
+│████  ████████ B│
+│  ████ R R      │
+│████    ██      │
+│██             B│
+└──────────────────┘  ✓ Viável
+
+================================================================
+  Pipeline concluído! Tempo total: 3m 15s
+================================================================
+
+Execução 3
+
+================================================================
+  PCGML — MLQD + Mutation Models Pipeline
+  EHR alvo: 50,000 | Assisted: True
+================================================================
+
+================================================================
+  PASSO 1: FI-CPA — Gerando EHR de Mutações (MLQD §3.1 + §5.1.1)
+================================================================
+[Passo 1] Modo Assisted Evolution ativado (Khalifa et al. §3.2)
+[CPA] Inicializando com 1105 indivíduos...
+[CPA] Arquivo viável: 125 células | Infeasível: 0 células
+[CPA] Coletando 50000 entradas no EHR...
+[CPA] Assisted re-treino (step=2,500, ehr=7,659)...
+[Assisted] Retreinando com 7,659 amostras (2 épocas)...
+[DEVICE] GPU selecionada: AMD Radeon RX 7600  [AMD (ROCm)]
+[MutationCNN] Construindo dataset de 7,659 transições...
+   Época [1/2] | Loss: 0.9964 | Val Acc: 58.1%
+   Época [2/2] | Loss: 0.9261 | Val Acc: 58.1%
+[MutationCNN] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/modelo_mutacao.pth'.
+[CPA] Assisted re-treino (step=5,000, ehr=12,414)...
+[Assisted] Retreinando com 12,414 amostras (2 épocas)...
+[MutationCNN] Construindo dataset de 12,414 transições...
+   Época [1/2] | Loss: 0.8444 | Val Acc: 67.6%
+   Época [2/2] | Loss: 0.7683 | Val Acc: 67.6%
+[MutationCNN] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/modelo_mutacao.pth'.
+   step=   5,000 | EHR=12,414 / 50,000 | cells_feas=317
+[CPA] Assisted re-treino (step=7,500, ehr=16,407)...
+[Assisted] Retreinando com 16,407 amostras (2 épocas)...
+[MutationCNN] Construindo dataset de 16,407 transições...
+   Época [1/2] | Loss: 0.7803 | Val Acc: 74.6%
+   Época [2/2] | Loss: 0.6871 | Val Acc: 74.7%
+[MutationCNN] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/modelo_mutacao.pth'.
+[CPA] Assisted re-treino (step=10,000, ehr=21,197)...
+[Assisted] Retreinando com 21,197 amostras (2 épocas)...
+[MutationCNN] Construindo dataset de 21,197 transições...
+   Época [1/2] | Loss: 0.7270 | Val Acc: 73.0%
+   Época [2/2] | Loss: 0.5730 | Val Acc: 80.7%
+[MutationCNN] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/modelo_mutacao.pth'.
+   step=  10,000 | EHR=21,197 / 50,000 | cells_feas=346
+[CPA] Assisted re-treino (step=12,500, ehr=26,266)...
+[Assisted] Retreinando com 26,266 amostras (2 épocas)...
+[MutationCNN] Construindo dataset de 26,266 transições...
+   Época [1/2] | Loss: 0.7123 | Val Acc: 77.5%
+   Época [2/2] | Loss: 0.5168 | Val Acc: 84.7%
+[MutationCNN] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/modelo_mutacao.pth'.
+[CPA] Assisted re-treino (step=15,000, ehr=31,332)...
+[Assisted] Retreinando com 31,332 amostras (2 épocas)...
+[MutationCNN] Construindo dataset de 31,332 transições...
+   Época [1/2] | Loss: 0.6878 | Val Acc: 81.0%
+   Época [2/2] | Loss: 0.4361 | Val Acc: 89.3%
+[MutationCNN] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/modelo_mutacao.pth'.
+   step=  15,000 | EHR=31,332 / 50,000 | cells_feas=368
+[CPA] Assisted re-treino (step=17,500, ehr=38,103)...
+[Assisted] Retreinando com 38,103 amostras (2 épocas)...
+[MutationCNN] Construindo dataset de 38,103 transições...
+   Época [1/2] | Loss: 0.6974 | Val Acc: 80.2%
+   Época [2/2] | Loss: 0.4344 | Val Acc: 91.4%
+[MutationCNN] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/modelo_mutacao.pth'.
+[CPA] Assisted re-treino (step=20,000, ehr=44,728)...
+[Assisted] Retreinando com 44,728 amostras (2 épocas)...
+[MutationCNN] Construindo dataset de 44,728 transições...
+   Época [1/2] | Loss: 0.6523 | Val Acc: 82.6%
+   Época [2/2] | Loss: 0.3413 | Val Acc: 92.8%
+[MutationCNN] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/modelo_mutacao.pth'.
+   step=  20,000 | EHR=44,728 / 50,000 | cells_feas=374
+[CPA] Concluído! EHR com 50,002 entradas (22,116 iterações no total).
+-> EHR salvo: 50,002 entradas em '/home/kaicola/coisas/PCGML/resultados/dataset_mutacoes_qd.npy'
+-> Células viáveis nos arquivos: 376
+-> Tempo: 1m 33s
+
+================================================================
+  PASSO 2: MutationCNN — Imitando Mutações Evolutivas (Khalifa et al. §3)
+================================================================
+[MutationCNN] Construindo dataset de 50,002 transições...
+   Época [1/8] | Loss: 0.5991 | Val Acc: 89.2%
+   Época [2/8] | Loss: 0.3173 | Val Acc: 92.9%
+   Época [3/8] | Loss: 0.2670 | Val Acc: 94.0%
+   Época [4/8] | Loss: 0.2491 | Val Acc: 94.1%
+   Época [5/8] | Loss: 0.2370 | Val Acc: 94.1%
+   Época [6/8] | Loss: 0.2270 | Val Acc: 94.1%
+   Época [7/8] | Loss: 0.2185 | Val Acc: 94.1%
+   Época [8/8] | Loss: 0.2129 | Val Acc: 94.1%
+[MutationCNN] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/modelo_mutacao.pth'.
+-> Tempo: 15s
+
+================================================================
+  PASSO 3: Transformer — Aprendendo Distribuição QD (MLQD §3.2)
+================================================================
+[Transformer] Carregando dataset do EHR...
+[TransformerDS] 50,002 entradas → 8,116 únicas
+[Transformer] Train=6,492 | Val=1,217 | Test=407
+[Transformer] Parâmetros treináveis: 811,270
+   Época [ 1/50] | Train Loss: 1.2543 | Val Loss: 0.9442
+   Época [ 5/50] | Train Loss: 0.7809 | Val Loss: 0.7414
+   Época [10/50] | Train Loss: 0.7023 | Val Loss: 0.6791
+   Época [15/50] | Train Loss: 0.6735 | Val Loss: 0.6541
+   Época [20/50] | Train Loss: 0.6556 | Val Loss: 0.6390
+   Época [25/50] | Train Loss: 0.6420 | Val Loss: 0.6314
+   Época [30/50] | Train Loss: 0.6328 | Val Loss: 0.6224
+   Época [35/50] | Train Loss: 0.6252 | Val Loss: 0.6165
+   Época [40/50] | Train Loss: 0.6184 | Val Loss: 0.6110
+   Época [45/50] | Train Loss: 0.6123 | Val Loss: 0.6068
+   Época [50/50] | Train Loss: 0.6048 | Val Loss: 0.6024
+[Transformer] Concluído! Melhor val loss: 0.6024
+[Transformer] Modelo salvo em '/home/kaicola/coisas/PCGML/resultados/transformer_model.pth'.
+-> Tempo: 1m 17s
+
+================================================================
+  PASSO 4: Inferência + Avaliação (MLQD §5.2 H1–H4)
+================================================================
+
+[Avaliação] Gerando 200 mapas para avaliação...
+   50/200 mapas gerados
+   100/200 mapas gerados
+   150/200 mapas gerados
+   200/200 mapas gerados
+
+====================================================
+  RELATÓRIO DE AVALIAÇÃO — MLQD
+====================================================
+  Mapas gerados  : 200
+  Mapas viáveis  : 168 (84.0%)   [H1]
+  Unique ratio   : 100.0%          [H2]
+  Unseen ratio   : 100.0%          [H2]
+  Cobertura BC ø : 30.9%          [H3]
+
+  Cobertura por feature (H3):
+  F01 Floor Ratio              ████████████              53.8%
+  F02 Wall Ratio               ████████████              53.8%
+  F03 Resource Ratio           ██                        10.8%
+  F04 Horiz. Symmetry          ███████                   30.8%
+  F05 Vert. Symmetry           ███████                   29.2%
+  F06 Diag. Symmetry           ███████                   32.3%
+  F07 Anti-Diag. Symmetry      ██████                    27.7%
+  F08 Wall Islands             █████                     21.5%
+  F09 Graph Diameter           ███████                   29.2%
+  F10 Bases Distance           ████                      20.0%
+  F11 Resource Safety          ███                       15.4%
+  F12 Resource Safety Bal.     █████                     21.5%
+  F13 Base Safety              ████████                  35.4%
+  F14 Base Safety Bal.         ██████████████████        76.9%
+  F15 Exploration              █████                     21.5%
+  F16 Exploration Bal.         ███                       13.8%
+====================================================
+[ERA] Gráfico salvo em '/home/kaicola/coisas/PCGML/resultados/era_plot.png'
+
+[Exemplos] 3 mapas gerados:
+
+┌─ Exemplo 1 ───────────────────────────────┐
+│  ██   R R██    │
+│██████████      │
+│██   B    ██████│
+│  ██    ████ R██│
+│████████  ██████│
+│██████████████  │
+│████████████    │
+│████   B R██████│
+└──────────────────┘  ✗ Inviável (f_inf=0.062)
+
+┌─ Exemplo 2 ───────────────────────────────┐
+│ R R            │
+│  ██ B R    ██  │
+│             B██│
+│                │
+│                │
+│    ██ R R      │
+│        ██      │
+│                │
+└──────────────────┘  ✓ Viável
+
+┌─ Exemplo 3 ───────────────────────────────┐
+│      ██    ██  │
+│      ██        │
+│    ██       R  │
+│  ████     B   R│
+│  ██    ██ R  ██│
+│              ██│
+│   B         R██│
+│  ████    ████  │
+└──────────────────┘  ✓ Viável
+
+================================================================
+  Pipeline concluído! Tempo total: 3m 38s
+================================================================
