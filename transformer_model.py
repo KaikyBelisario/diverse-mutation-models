@@ -11,7 +11,6 @@ Implementação fiel ao MLQD §3.2 e §4.2 (Sfikas et al., 2025):
   - Inferência: autoregressiva com top-p sampling  p=0.9  (§4.2.4)
 """
 import os
-os.environ["HSA_OVERRIDE_GFX_VERSION"] = "11.0.0"
 import torch
 import torch.nn as nn
 import torch.nn.functional as F

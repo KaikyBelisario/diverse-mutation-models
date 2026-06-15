@@ -18,6 +18,8 @@ Uso:
 """
 
 import os
+# Deve ser definido antes de qualquer inicialização do ROCm/PyTorch
+os.environ.setdefault("HSA_OVERRIDE_GFX_VERSION", "11.0.0")
 import sys
 import time
 import argparse
@@ -81,6 +83,9 @@ def passo2() -> None:
     t0 = time.time()
     from treino_mutacao import train_mutation_model
     train_mutation_model(epochs=8)   # método Normal — treino único no EHR final
+    import gc, torch
+    gc.collect()
+    torch.cuda.empty_cache()
     print(f"-> Tempo: {fmt_tempo(time.time() - t0)}")
 
 
@@ -151,11 +156,17 @@ def passo4() -> None:
         output_path    = get_era_plot_path(),
     )
 
-    # ── Mostra 3 mapas de exemplo ─────────────────────────────────────────────
-    from geracao_final import print_level
-    print("\n[Exemplos] 3 mapas gerados:")
-    for i, m in enumerate(generated[:3]):
-        print_level(m, f"Exemplo {i+1}")
+    # ── Salva todos os mapas em arquivo ─────────────────────────────────────────
+    from geracao_final import format_level
+    from path_utils import get_maps_output_path
+    maps_path = get_maps_output_path()
+    with open(maps_path, 'w', encoding='utf-8') as f:
+        f.write(f"Mapas Gerados — {N_EVAL} mapas\n")
+        f.write("=" * 44 + "\n")
+        for i, m in enumerate(generated):
+            f.write(format_level(m, f"Mapa {i+1}/{N_EVAL}"))
+            f.write("\n")
+    print(f"\n[Exemplos] {N_EVAL} mapas salvos em '{maps_path}'")
 
 
 # ─────────────────────────────────────────────────────────────────────────────

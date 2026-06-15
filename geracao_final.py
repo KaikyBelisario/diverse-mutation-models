@@ -33,13 +33,19 @@ TILE_SYMBOLS = {FLOOR: '  ', WALL: '██', RESOURCE: ' R', BASE: ' B'}
 # Utilitários de visualização
 # ─────────────────────────────────────────────────────────────────────────────
 
-def print_level(level, title: str = "Mapa") -> None:
+def format_level(level, title: str = "Mapa") -> str:
     is_feas, f_inf = feasibility_score(level)
-    print(f"\n┌─ {title} {'─' * max(0, 40 - len(title))}┐")
+    lines = []
+    lines.append(f"\n┌─ {title} {'─' * max(0, 40 - len(title))}┐")
     for row in level:
-        print('│' + ''.join(TILE_SYMBOLS.get(int(t), '??') for t in row) + '│')
+        lines.append('│' + ''.join(TILE_SYMBOLS.get(int(t), '??') for t in row) + '│')
     status = '✓ Viável' if is_feas else f'✗ Inviável (f_inf={f_inf:.3f})'
-    print(f"└{'─' * 18}┘  {status}")
+    lines.append(f"└{'─' * 18}┘  {status}")
+    return '\n'.join(lines)
+
+
+def print_level(level, title: str = "Mapa") -> None:
+    print(format_level(level, title))
 
 
 # ─────────────────────────────────────────────────────────────────────────────

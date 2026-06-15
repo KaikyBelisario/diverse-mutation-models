@@ -54,6 +54,11 @@ def get_era_plot_path():
     return os.path.join(RESULTS_DIR, "era_plot.png")
 
 
+def get_maps_output_path():
+    """Retorna o caminho do arquivo de texto com os mapas gerados."""
+    return os.path.join(RESULTS_DIR, "mapas_gerados.txt")
+
+
 # ============================================================================
 # FUNÇÃO DE VERIFICAÇÃO
 # ============================================================================
