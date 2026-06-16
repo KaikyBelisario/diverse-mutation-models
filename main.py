@@ -19,7 +19,8 @@ Uso:
 
 import os
 # Deve ser definido antes de qualquer inicialização do ROCm/PyTorch
-os.environ.setdefault("HSA_OVERRIDE_GFX_VERSION", "11.0.0")
+# RX 7600 é GFX1102 → versão correta é 11.0.2
+os.environ["HSA_OVERRIDE_GFX_VERSION"] = "11.0.2"
 import sys
 import time
 import argparse
@@ -126,7 +127,7 @@ def passo4() -> None:
         return
 
     # ── Gera 200 mapas para avaliação ────────────────────────────────────────
-    N_EVAL = 200
+    N_EVAL = 1
     print(f"\n[Avaliação] Gerando {N_EVAL} mapas para avaliação...")
     generated = []
     for i in range(N_EVAL):

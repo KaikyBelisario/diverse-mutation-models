@@ -187,7 +187,18 @@ class FICPA:
                     and step % self.retrain_interval == 0
                     and len(self.ehr) >= 500):
                 print(f"[CPA] Assisted re-treino (step={step:,}, ehr={len(self.ehr):,})...")
+                old_model = self.mutation_model
                 self.mutation_model = self.retrain_callback(self.ehr)
+                # Libera o modelo anterior da GPU antes de continuar
+                if old_model is not None:
+                    import gc
+                    try:
+                        import torch
+                        del old_model
+                        gc.collect()
+                        torch.cuda.empty_cache()
+                    except Exception:
+                        pass
 
             # ── Log de progresso ──────────────────────────────────────────────
             if step % 5_000 == 0:

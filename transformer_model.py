@@ -194,6 +194,15 @@ def train_transformer():
     ensure_results_dir()
     device = get_device()
 
+    # Desabilita Flash Attention e mem-efficient attention no ROCm — esses
+    # backends usam kernels JIT específicos de ISA que falham no GFX1102.
+    # Força o backend math puro, que funciona em qualquer GFX.
+    try:
+        torch.backends.cuda.enable_flash_sdp(False)
+        torch.backends.cuda.enable_mem_efficient_sdp(False)
+    except AttributeError:
+        pass  # versões antigas do PyTorch não têm esses controles
+
     print("[Transformer] Carregando dataset do EHR...")
     try:
         full_ds = TransformerMapDataset(get_dataset_path())

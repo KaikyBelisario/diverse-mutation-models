@@ -183,9 +183,18 @@ def train_mutation_model(
     torch.save(model.state_dict(), get_mutation_model_path())
     print(f"[MutationCNN] Modelo salvo em '{get_mutation_model_path()}'.")
 
+    # Libera optimizer e cache de GPU imediatamente (evita fragmentação de VRAM)
+    del optimizer, criterion
+    import gc
+    gc.collect()
+    torch.cuda.empty_cache()
+
     if return_model:
         model.eval()
         return model
+    del model
+    gc.collect()
+    torch.cuda.empty_cache()
     return None
 
 
